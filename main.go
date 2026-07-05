@@ -21,22 +21,23 @@ var todos = []Todo{
 func getTodos(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, todos)
 }
-                          
+
+func addTodo(c *gin.Context) {
+	var todo Todo
+	if err := c.BindJSON(&todo); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+	todos = append(todos, todo)
+	c.IndentedJSON(http.StatusCreated, todos)
+}
+
 func main() {
 	route := gin.Default()
 	route.GET("/", getTodos)
-
+	route.POST("/todos", addTodo)
 	route.Run("localhost:8080")
 
 }
-
-// route.POST("/post", func(c *gin.Context) {
-// 	var req Request
-// 	if err := c.ShouldBindJSON(&req); err != nil {
-// 		c.IndentedJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
-// 		return
-// 	}
-// 	c.IndentedJSON(http.StatusOK, gin.H{
-// 		"pong": "0",
-// 	})
-// })
