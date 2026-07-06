@@ -39,5 +39,4 @@ func main() {
 	route.GET("/", getTodos)
 	route.POST("/todos", addTodo)
 	route.Run("localhost:8080")
-
 }
