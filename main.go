@@ -48,29 +48,38 @@ func deletToDo(c *gin.Context) {
 	todos = newTodos
 }
 
-func putToDo (c *gin.Context){
-	type PutParam struct { 
-		Title string `json:"title,omitempty"`
-		IsDone bool `json:"isdone,omitempty"`
+func putToDo(c *gin.Context) {
+	type PutParam struct {
+		Title  *string `json:"title"`
+		IsDone *bool   `json:"isdone"`
 	}
 	id := c.Param("id")
 	var puttingParam PutParam
 
-	if err := c.ShouldBindJSON(&puttingParam); err != nil { 
+	if err := c.ShouldBindJSON(&puttingParam); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
 			"err": err.Error(),
 		})
 		return
 	}
-	for i := 0; i < len(todos); i++ {
-		if todos[i].ID == id {
-			todos[i].IsDone = puttingParam.IsDone
-			todos[i].Title = puttingParam.Title
-		} 
+	for i, r := range todos {
+		if r.ID == id {
+			if puttingParam.IsDone != nil {
+				todos[i].IsDone = *puttingParam.IsDone
+			}
+			if puttingParam.Title != nil {
+				todos[i].Title = *puttingParam.Title
+			}
+			c.IndentedJSON(http.StatusOK, gin.H{
+				"message": "toDo with id " + id + " was been update",
+			})
+			return
+		}
 	}
-	c.IndentedJSON(http.StatusOK, gin.H{
-		"message":"toDo with id " + id + " was been update" ,
+	c.IndentedJSON(http.StatusNotFound, gin.H{
+		"message":"user not found",
 	})
+
 }
 
 func main() {
