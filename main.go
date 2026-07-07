@@ -54,9 +54,9 @@ func putToDo(c *gin.Context) {
 		IsDone *bool   `json:"isdone"`
 	}
 	id := c.Param("id")
-	var puttingParam PutParam
+	var params PutParam
 
-	if err := c.ShouldBindJSON(&puttingParam); err != nil {
+	if err := c.ShouldBindJSON(&params); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
 			"err": err.Error(),
 		})
@@ -64,14 +64,14 @@ func putToDo(c *gin.Context) {
 	}
 	for i, r := range todos {
 		if r.ID == id {
-			if puttingParam.IsDone != nil {
-				todos[i].IsDone = *puttingParam.IsDone
+			if params.IsDone != nil {
+				todos[i].IsDone = *params.IsDone
 			}
-			if puttingParam.Title != nil {
-				todos[i].Title = *puttingParam.Title
+			if params.Title != nil {
+				todos[i].Title = *params.Title
 			}
 			c.IndentedJSON(http.StatusOK, gin.H{
-				"message": "toDo with id " + id + " was been update",
+				"message": "toDo with id " + id + " has been update",
 			})
 			return
 		}
