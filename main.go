@@ -48,10 +48,36 @@ func deletToDo(c *gin.Context) {
 	todos = newTodos
 }
 
+func putToDo (c *gin.Context){
+	type PutParam struct { 
+		Title string `json:"title,omitempty"`
+		IsDone bool `json:"isdone,omitempty"`
+	}
+	id := c.Param("id")
+	var puttingParam PutParam
+
+	if err := c.ShouldBindJSON(&puttingParam); err != nil { 
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+	for i := 0; i < len(todos); i++ {
+		if todos[i].ID == id {
+			todos[i].IsDone = puttingParam.IsDone
+			todos[i].Title = puttingParam.Title
+		} 
+	}
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"message":"toDo with id " + id + " was been update" ,
+	})
+}
+
 func main() {
 	route := gin.Default()
 	route.GET("/", getTodos)
 	route.POST("/todos", addTodo)
 	route.DELETE("/todos/:id", deletToDo)
+	route.PUT("/todos/:id", putToDo)
 	route.Run("localhost:8080")
 }
