@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"slices"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,9 +35,23 @@ func addTodo(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, todos)
 }
 
+func deletToDo(c *gin.Context) {
+	id := c.Param("id")
+
+	newTodos := slices.DeleteFunc(todos, func(t Todo) bool {
+		return t.ID == id
+	})
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"message": "element with id:" + id + " was deleted",
+	})
+
+	todos = newTodos
+}
+
 func main() {
 	route := gin.Default()
 	route.GET("/", getTodos)
 	route.POST("/todos", addTodo)
+	route.DELETE("/todos/:id", deletToDo)
 	route.Run("localhost:8080")
 }
