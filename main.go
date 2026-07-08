@@ -48,13 +48,13 @@ func deletToDo(c *gin.Context) {
 	todos = newTodos
 }
 
-func putToDo(c *gin.Context) {
-	type PutParam struct {
+func patchToDo(c *gin.Context) {
+	type Param struct {
 		Title  *string `json:"title"`
 		IsDone *bool   `json:"isdone"`
 	}
 	id := c.Param("id")
-	var params PutParam
+	var params Param
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
@@ -77,9 +77,39 @@ func putToDo(c *gin.Context) {
 		}
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{
-		"message":"user not found",
+		"message": "user not found",
 	})
 
+}
+
+func putToDo(c *gin.Context) {
+	type PutParams struct {
+		Title  string `json:"title" binding:"required"`
+		IsDone bool   `json:"isdone" binding:"required"`
+	}
+	id := c.Param("id")
+	var params PutParams
+
+	if err := c.ShouldBindJSON(&params); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+
+	for i, r := range todos {
+		if r.ID == id {
+			todos[i].Title = params.Title
+			todos[i].IsDone = params.IsDone
+			c.IndentedJSON(http.StatusOK, gin.H{
+				"message": "todo has been update",
+			})
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{
+		"error": "user with id " + id + " not found :(",
+	})
 }
 
 func main() {
@@ -87,6 +117,7 @@ func main() {
 	route.GET("/", getTodos)
 	route.POST("/todos", addTodo)
 	route.DELETE("/todos/:id", deletToDo)
+	route.PATCH("/todos/:id", patchToDo)
 	route.PUT("/todos/:id", putToDo)
 	route.Run("localhost:8080")
 }
