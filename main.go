@@ -111,9 +111,9 @@ func putToDo(c *gin.Context) {
 }
 
 func main() {
-	urlExample := "postgres://postgres:qwerty@localhost:5432/tododb"
+	url := "postgres://postgres:qwerty@localhost:5432/tododb"
 
-	conn, err := pgx.Connect(context.Background(), urlExample)
+	conn, err := pgx.Connect(context.Background(), url)
 	if err != nil { 
 		panic(err.Error())
 	}
