@@ -1,19 +1,18 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"net/http"
+	"simplehttpserve/models"
 	"slices"
+
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 )
 
-type Todo struct {
-	ID        string `json:"id"`
-	Title     string `json:"title"`
-	IsDone    bool   `json:"isdone"`
-	AddedDate string `json:"addeddate"`
-}
 
-var todos = []Todo{
+var todos = []models.Todo{
 	{ID: "1", Title: "buy bread", IsDone: false, AddedDate: "2026-07-05"},
 	{ID: "2", Title: "feed cat", IsDone: true, AddedDate: "2026-07-03"},
 }
@@ -23,7 +22,7 @@ func getTodos(c *gin.Context) {
 }
 
 func addTodo(c *gin.Context) {
-	var todo Todo
+	var todo models.Todo
 	if err := c.BindJSON(&todo); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
 			"err": err.Error(),
@@ -37,7 +36,7 @@ func addTodo(c *gin.Context) {
 func deletToDo(c *gin.Context) {
 	id := c.Param("id")
 
-	newTodos := slices.DeleteFunc(todos, func(t Todo) bool {
+	newTodos := slices.DeleteFunc(todos, func(t models.Todo) bool {
 		return t.ID == id
 	})
 	c.IndentedJSON(http.StatusOK, gin.H{
@@ -112,11 +111,28 @@ func putToDo(c *gin.Context) {
 }
 
 func main() {
+	urlExample := "postgres://postgres:qwerty@localhost:5432/tododb"
+
+	conn, err := pgx.Connect(context.Background(), urlExample)
+	if err != nil { 
+		panic(err.Error())
+	}
+
+	defer conn.Close(context.Background())
+	var title string
+
+	err = conn.QueryRow(context.Background(), "select title from tododb where isdone=$1", true).Scan(&title)
+	if err != nil { 
+		fmt.Println("QueryRow Failed", err.Error())
+	}
+
+	fmt.Println(title)
+
 	route := gin.Default()
 	route.GET("/", getTodos)
 	route.POST("/todos", addTodo)
 	route.DELETE("/todos/:id", deletToDo)
 	route.PATCH("/todos/:id", patchToDo)
 	route.PUT("/todos/:id", putToDo)
-	route.Run("localhost:8080")
+	// route.Run("localhost:8080")
 }
