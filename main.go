@@ -5,11 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// var todos = []models.Todo{
-// 	{ID: "1", Title: "buy bread", IsDone: false, AddedDate: "2026-07-05"},
-// 	{ID: "2", Title: "feed cat", IsDone: true, AddedDate: "2026-07-03"},
-// }
-
 
 // func addTodo(c *gin.Context) {
 // 	var todo models.Todo
@@ -21,19 +16,6 @@ import (
 // 	}
 // 	todos = append(todos, todo)
 // 	c.IndentedJSON(http.StatusCreated, todos)
-// }
-
-// func deletToDo(c *gin.Context) {
-// 	id := c.Param("id")
-
-// 	newTodos := slices.DeleteFunc(todos, func(t models.Todo) bool {
-// 		return t.ID == id
-// 	})
-// 	c.IndentedJSON(http.StatusOK, gin.H{
-// 		"message": "element with id:" + id + " was deleted",
-// 	})
-
-// 	todos = newTodos
 // }
 
 // func patchToDo(c *gin.Context) {
@@ -105,7 +87,7 @@ func main() {
 	
 	route := gin.Default()
 	route.GET("/", services.GetTodos)
-	// route.POST("/todos", addTodo)
+	route.POST("/todos", services.CraeteTodo)
 	route.DELETE("/todos/:id", services.DeleteTodo)
 	// route.PATCH("/todos/:id", patchToDo)
 	// route.PUT("/todos/:id", putToDo)
