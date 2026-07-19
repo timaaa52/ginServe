@@ -103,12 +103,11 @@ import (
 func main() {
 	
 	
-	// route := gin.Default()
-	// route.GET("/", services.GetTodos)
+	route := gin.Default()
+	route.GET("/", services.GetTodos)
 	// route.POST("/todos", addTodo)
-	// route.DELETE("/todos/:id", deletToDo)
+	route.DELETE("/todos/:id", services.DeleteTodo)
 	// route.PATCH("/todos/:id", patchToDo)
 	// route.PUT("/todos/:id", putToDo)
-	// route.Run("localhost:8080")
-	services.GetTodos(&gin.Context{})
+	route.Run("localhost:8080")
 }
