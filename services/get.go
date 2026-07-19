@@ -3,22 +3,22 @@ package services
 import (
 	"context"
 	"fmt"
-	// "net/http"
-	"simplehttpserve/models"
+	"net/http"
 
+	// "net/http"
+	"simplehttpserve/database"
+	"simplehttpserve/models"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func GetTodos(c *gin.Context) {
-	url := "postgres://postgres:qwerty@localhost:5432/tododb"
-	conn, err := pgxpool.New(context.Background(), url)
-	if err != nil {
+	
+	db, err := database.Connection()
+	if err != nil  { 
 		panic(err.Error())
 	}
-	defer conn.Close()
-
-	rows, err := conn.Query(context.Background(), "select id, title, isdone, added_date from tododb order by id asc")
+	defer db.Close()
+	rows, err := db.Query(context.Background(), "select id, title, isdone, added_date from tododb order by id asc")
 
 	if err != nil {
 		fmt.Println("error get query row", err.Error())
@@ -37,7 +37,6 @@ func GetTodos(c *gin.Context) {
 		}
 		todos = append(todos, t)
 	}
-	// c.IndentedJSON(http.StatusOK, todos)
-	fmt.Println(todos)
+	c.IndentedJSON(http.StatusOK, todos)
 
 }
