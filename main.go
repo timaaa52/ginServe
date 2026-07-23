@@ -10,7 +10,7 @@ func main() {
 	
 	route := gin.Default()
 	route.GET("/", services.GetTodos)
-	route.POST("/todos", services.CraeteTodo)
+	route.POST("/todos", services.CreateTodo)
 	route.DELETE("/todos/:id", services.DeleteTodo)
 	route.PUT("/todos/:id", services.UpdateTodos)
 	route.Run("localhost:8080")

@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CraeteTodo(c *gin.Context) {
+func CreateTodo(c *gin.Context) {
 
 	db, err := database.Connection()
 	if err != nil { 
