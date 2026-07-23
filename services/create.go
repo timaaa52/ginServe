@@ -29,4 +29,8 @@ func CraeteTodo(c *gin.Context) {
 	if err != nil { 
 		panic(err.Error())
 	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"message": "todo has been created",
+	})
 }

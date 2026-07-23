@@ -32,7 +32,7 @@ func DeleteTodo(c *gin.Context) {
 		})
 	} else {
 		c.IndentedJSON(http.StatusOK, gin.H{ 
-			"message": "Todo with id=" + id + " was successfully deleted",
+			"message": "Todo with id " + id + " was successfully deleted",
 		})
 	}
 }
