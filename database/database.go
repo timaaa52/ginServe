@@ -12,8 +12,8 @@ import (
 var DB *pgxpool.Pool
 
 func Connection()(*pgxpool.Pool, error) {
-	endErr := godotenv.Load()
-	if endErr != nil { 
+	envErr := godotenv.Load()
+	if envErr != nil { 
 		log.Fatalf("env not found")
 	}
 	var err error
