@@ -2,16 +2,26 @@ package database
 
 import (
 	"context"
+	"log"
+	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
+var DB *pgxpool.Pool
+
 func Connection()(*pgxpool.Pool, error) {
-	url := "postgres://postgres:qwerty@localhost:5432/tododb"
-	conn, err := pgxpool.New(context.Background(), url)
+	endErr := godotenv.Load()
+	if endErr != nil { 
+		log.Fatalf("env not found")
+	}
+	var err error
+	url := os.Getenv("DB_URL")
+	DB, err = pgxpool.New(context.Background(), url)
 	if err != nil {
-		panic(err.Error())
+		log.Fatalf("Bad connection to database %v", err.Error())
 	}
 
-	return conn, nil
+	return DB, nil
 }

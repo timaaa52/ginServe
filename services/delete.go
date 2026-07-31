@@ -9,29 +9,23 @@ import (
 )
 
 func DeleteTodo(c *gin.Context) {
-
-	db,err := database.Connection()
-	if err !=  nil { 
-		panic(err.Error())
-	}
-
-	defer db.Close()
-
 	id := c.Param("id")
 
-	row, err := db.Exec(context.Background(), "delete from tododb where id=$1", id)
+	row, err := database.DB.Exec(context.Background(), "delete from tododb where id=$1", id)
 
-	if err != nil { 
-		panic(err.Error())
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"err": err.Error(),
+		})
 	}
 
 	rowAffected := row.RowsAffected()
-	if rowAffected == 0 { 
+	if rowAffected == 0 {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
-			"message": "Todo with id=" + id + " not found",
+			"message": "Todo with id " + id + " not found",
 		})
 	} else {
-		c.IndentedJSON(http.StatusOK, gin.H{ 
+		c.IndentedJSON(http.StatusOK, gin.H{
 			"message": "Todo with id " + id + " was successfully deleted",
 		})
 	}

@@ -2,26 +2,19 @@ package services
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"net/http"
-
-	// "net/http"
 	"simplehttpserve/database"
 	"simplehttpserve/models"
 	"github.com/gin-gonic/gin"
 )
 
 func GetTodos(c *gin.Context) {
-	
-	db, err := database.Connection()
-	if err != nil  { 
-		panic(err.Error())
-	}
-	defer db.Close()
-	rows, err := db.Query(context.Background(), "select id, title, isdone, added_date from tododb order by id asc")
+
+	rows, err := database.DB.Query(context.Background(), "select id, title, isdone, added_date from tododb order by id asc")
 
 	if err != nil {
-		fmt.Println("error get query row", err.Error())
+		log.Fatalf("error get query row %v", err.Error())
 	}
 
 	defer rows.Close()
@@ -32,7 +25,7 @@ func GetTodos(c *gin.Context) {
 
 		err := rows.Scan(&t.ID, &t.Title, &t.IsDone, &t.AddedDate)
 		if err != nil {
-			fmt.Println("err")
+			log.Fatalf("err reading row")
 			continue
 		}
 		todos = append(todos, t)
