@@ -1,12 +1,20 @@
 package main
 
 import (
+	"log"
+	"simplehttpserve/database"
 	"simplehttpserve/services"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	
+	var err error
+	database.DB, err = database.Connection()
+	if err != nil { 
+		log.Fatalf("Bad connection to database: %v", err.Error())
+	}
+
+	defer database.DB.Close()
 	
 	route := gin.Default()
 	route.GET("/", services.GetTodos)
